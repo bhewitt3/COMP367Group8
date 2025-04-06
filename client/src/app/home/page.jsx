@@ -27,7 +27,7 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true);
-
+    // Call the API to register the user
     try {
       await authApi.register(formData.email, formData.password);
       router.push('/login?registered=true');

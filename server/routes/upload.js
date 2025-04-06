@@ -36,17 +36,7 @@ router.post('/upload', authenticateToken, upload.single('pdf'), async (req, res)
   }  
 
   try {
-    // COMMENTING OUT all the PDF parsing and Flask API code:
-    /* 
-    // Read the uploaded PDF file and parse
-    const dataBuffer = fs.readFileSync(`uploads/${req.file.filename}`);
-    const pdfData = await pdfParse(dataBuffer);
-
-    // Send extracted text to the Flask API for summarization
-    const response = await axios.post(FLASK_API_URL, { text: pdfData.text });
-    */
-    // Create new summary document
-
+    
     const summary = new Summary({
       originalFileName: req.file.originalname,
       storedFilePath: `/uploads/${req.file.filename}`,
