@@ -39,6 +39,10 @@ stages:
         cp -r coverage $(Build.ArtifactStagingDirectory)/coverage/client
       displayName: 'Tests and code coverage'
 
+    - task: PublishCodeCoverageResults@2
+      inputs:
+        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coverage/lcov-report/index.html'
+      displayName: 'Publish code coverage results'
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
