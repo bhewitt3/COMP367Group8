@@ -54,7 +54,7 @@ export default function FlashcardPage() {
       setSortDirection('asc');
     }
   };
-
+//sort the flashcards by date
   const sortedFlashcardDecks = [...flashcardDecks].sort((a, b) => {
     if (sortField === 'createdAt') {
       return sortDirection === 'asc' 

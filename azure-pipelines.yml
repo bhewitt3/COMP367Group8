@@ -1,0 +1,192 @@
+trigger:
+- main
+
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build and Test Job'
+    pool: 
+      name: MyAgentPool
+
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+      displayName: 'Install Node.js'
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.12'
+      displayName: 'Use Python 3.12'
+#Compile project
+    - script: |
+        cd client
+        npm install
+        npm run build
+        cd ../server
+        npm install
+        npm run build
+        cd ../GenerationAPI
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: 'Install and build all components'
+#test project
+    - script: |
+        echo "No unit tests implemented"
+      displayName: 'Tests and code coverage'
+
+    - task: CopyFiles@2
+      inputs:
+        sourceFolder: '$(Build.SourcesDirectory)'
+        contents: |
+          client/**
+          server/**
+          GenerationAPI/**
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+      displayName: 'Copy project files'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        artifactName: e2e-server
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        publishLocation: 'pipeline'
+      displayName: 'Publish artifact'
+
+
+- stage: Deliver
+  displayName: 'Deliver Stage'
+  dependsOn: Build
+  jobs:
+  - job: ReleaseJob
+    displayName: 'Release Artifact'
+    pool:
+      name: MyAgentPool
+    steps:
+    - download: current
+      artifact: e2e-server
+
+    - script: |
+        echo "Simulating artifact release"
+        dir "$(Pipeline.Workspace)/e2e-server"
+      displayName: 'Release the artifact'
+
+
+- stage: Deploy_Dev
+  displayName: 'Deploy to Dev Env'
+  dependsOn: Deliver
+  jobs:
+  - job: DeployDev
+    displayName: 'Deploy to Dev'
+    pool:
+      name: MyAgentPool
+    steps:
+    - download: current
+      artifact: e2e-server
+
+    - script: |
+        echo "Launching React client in Dev environment"
+        cd $(Pipeline.Workspace)/e2e-server/client
+        npm install
+        npx serve -s build &
+
+        echo "Launching Node.js server in Dev environment"
+        cd ../server
+        npm install
+        npm start &
+
+        echo "Launching Flask API in Dev environment"
+        cd ../GenerationAPI
+        pip install -r requirements.txt
+        python app.py &
+      displayName: 'Mock launch app in Dev'
+
+
+- stage: Deploy_QAT
+  displayName: 'Deploy to QAT Env'
+  dependsOn: Deploy_Dev
+  jobs:
+  - job: DeployQAT
+    displayName: 'Deploy to QAT'
+    pool:
+      name: MyAgentPool
+    steps:
+    - download: current
+      artifact: e2e-server
+
+    - script: |
+        echo "Launching React client in QAT environment"
+        cd $(Pipeline.Workspace)/e2e-server/client
+        npm install
+        npx serve -s build &
+
+        echo "Launching Node.js server in QAT environment"
+        cd $(Pipeline.Workspace)/e2e-server/server
+        npm install
+        npm start &
+
+        echo "Launching Flask API in QAT environment"
+        cd ../GenerationAPI
+        pip install -r requirements.txt
+        python app.py &
+      displayName: 'Mock launch app in QAT'
+
+
+- stage: Deploy_Staging
+  displayName: 'Deploy to Staging Env'
+  dependsOn: Deploy_QAT
+  jobs:
+  - job: DeployStaging
+    displayName: 'Deploy to Staging'
+    pool:
+      name: MyAgentPool
+    steps:
+    - download: current
+      artifact: e2e-server
+
+    - script: |
+        echo "Launching React client in Staging environment"
+        cd $(Pipeline.Workspace)/e2e-server/client
+        npm install
+        npx serve -s build &
+
+        echo "Launching Node.js server in Staging environment"
+        cd $(Pipeline.Workspace)/e2e-server/server
+        npm install
+        npm start &
+
+        echo "Launching Flask API in Staging environment"
+        cd ../GenerationAPI
+        pip install -r requirements.txt
+        python app.py &
+      displayName: 'Mock launch app in Staging'
+
+
+- stage: Deploy_Prod
+  displayName: 'Deploy to Production Env'
+  dependsOn: Deploy_Staging
+  jobs:
+  - job: DeployProd
+    displayName: 'Deploy to Production'
+    pool:
+      name: MyAgentPool
+    steps:
+    - download: current
+      artifact: e2e-server
+
+    - script: |
+        echo "Launching React client in Production environment"
+        cd $(Pipeline.Workspace)/e2e-server/client
+        npm install
+        npx serve -s build &
+
+        echo "Launching Node.js server in Production environment"
+        cd $(Pipeline.Workspace)/e2e-server/server
+        npm install
+        npm start &
+
+        echo "Launching Flask API in Production environment"
+        cd ../GenerationAPI
+        pip install -r requirements.txt
+        python app.py &
+      displayName: 'Mock launch app in Production'

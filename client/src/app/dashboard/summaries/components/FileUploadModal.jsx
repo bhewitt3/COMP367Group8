@@ -32,7 +32,7 @@ export default function FileUploadModal({ isOpen, onClose }) {
       setFile(null);
       return;
     }
-
+    //Limit max file size to 100MB and min file size to 0.01MB
     const fileSizeMB = selectedFile.size / (1024 * 1024);
     if (fileSizeMB < MIN_FILE_SIZE || fileSizeMB > MAX_FILE_SIZE) {
       setStatus({ 
@@ -55,7 +55,7 @@ export default function FileUploadModal({ isOpen, onClose }) {
 
     setIsGenerating(true);
     setStatus(null);
-
+    //validate page range
     if (startPage > endPage || endPage - startPage > 5) {
       setStatus({ message: 'Invalid page range. Please try again.', type: 'error' });
       setIsGenerating(false);
@@ -86,6 +86,7 @@ export default function FileUploadModal({ isOpen, onClose }) {
         if (!uploadResponse.success) {
           throw new Error('Failed to upload PDF');
         }
+        //save the summary
         const updateResponse = await updateSummary(uploadResponse.summaryId, flaskResponse.data.summary);
 
         if (updateResponse.success) {

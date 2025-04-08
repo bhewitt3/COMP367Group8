@@ -24,9 +24,11 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
 
+    //call the API to login the user
     try {
       const response = await authApi.login(formData.email, formData.password);
       login(response.user, response.token);
+      //if login is successful, redirect to dashboard
       router.push('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
