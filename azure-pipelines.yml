@@ -68,7 +68,7 @@ stages:
 
     - script: |
         echo "Simulating artifact release"
-        dir $(Pipeline.Workspace)/e2e-server
+        dir "$(Pipeline.Workspace)/e2e-server"
       displayName: 'Release the artifact'
 
 
