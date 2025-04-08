@@ -40,8 +40,7 @@ stages:
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
         contents: |
-          client/src/**
-          client/public/**
+          client/**
           server/**
           GenerationAPI/**
         targetFolder: '$(Build.ArtifactStagingDirectory)'
@@ -69,7 +68,7 @@ stages:
 
     - script: |
         echo "Simulating artifact release"
-        ls $(Pipeline.Workspace)/e2e-server
+        dir $(Pipeline.Workspace)/e2e-server
       displayName: 'Release the artifact'
 
 
