@@ -46,13 +46,13 @@ export default function TextInputModal({ isOpen, onClose }) {
         setStatus({ message: 'Failed to generate summary.', type: 'error' });
         return;
       }
-
+      //save the summary
       const uploadResponse = await uploadRawTextSummary(title, text, flaskResponse.data.summary);
 
       if(!uploadResponse.success){
         throw new Error("Failed to upload raw text sumamry");
       }
-
+      //set summary for preview
       setSummary(flaskResponse.data.summary);
       setSummaryId(uploadResponse.summaryId);
       setStatus({ message: 'Summary generated successfully', type: 'success' });
