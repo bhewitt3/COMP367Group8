@@ -1,0 +1,33 @@
+trigger:
+- main
+
+pool:
+  name: MyAgentPool
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.12'
+  displayName: 'Use Python 3.12'
+
+- script: |
+    cd client
+    npm install
+    npm run build
+  displayName: 'npm install and build - client'
+
+- script: |
+    cd server
+    npm install
+    npm run build
+  displayName: 'npm install and build - server'
+
+- script: 
+    cd GenerationAPI
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install python dependencies'
