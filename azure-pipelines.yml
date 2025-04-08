@@ -46,6 +46,7 @@ stages:
           client/**
           server/**
           GenerationAPI/**
+          !**/node_modules/**
         targetFolder: '$(Build.ArtifactStagingDirectory)'
       displayName: 'Copy project files'
 
