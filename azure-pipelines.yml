@@ -33,7 +33,10 @@ stages:
       displayName: 'Install and build all components'
 #test project
     - script: |
-        echo "No unit tests implemented"
+        cd client
+        npm run test
+        mkdir -p $(Build.ArtifactStagingDirectory)/coverage/client
+        cp -r coverage $(Build.ArtifactStagingDirectory)/coverage/client
       displayName: 'Tests and code coverage'
 
     - task: CopyFiles@2
