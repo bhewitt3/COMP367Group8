@@ -41,7 +41,8 @@ stages:
 
     - task: PublishCodeCoverageResults@2
       inputs:
-        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coverage/lcov-report/index.html'
+        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coverage/client/lcov-report/index.html'
+        reportDirectory: '$(Build.ArtifactStagingDirectory)/coverage/client'
       displayName: 'Publish code coverage results'
     - task: CopyFiles@2
       inputs:
