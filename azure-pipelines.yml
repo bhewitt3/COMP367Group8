@@ -35,6 +35,7 @@ stages:
     - script: |
         cd client
         npm run test
+        mkdir $(Build.ArtifactStagingDirectory)\coverage
         mkdir $(Build.ArtifactStagingDirectory)\coverage\client
         cp -r coverage $(Build.ArtifactStagingDirectory)\coverage\client
       displayName: 'Tests and code coverage'
