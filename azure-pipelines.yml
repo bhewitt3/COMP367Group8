@@ -42,7 +42,7 @@ stages:
       
     - task: PublishCodeCoverageResults@2
       inputs:
-        summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage/lcov-report/index.html
+        summaryFileLocation: $(System.DefaultWorkingDirectory)/**/lcov-report/index.html
       displayName: 'Publish code coverage results'
     - task: CopyFiles@2
       inputs:
