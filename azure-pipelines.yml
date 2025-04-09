@@ -33,9 +33,38 @@ stages:
       displayName: 'Install and build all components'
 #test project
     - script: |
-        echo "No unit tests implemented"
-      displayName: 'Tests and code coverage'
+        cd client
+        npm run test -- --coverage  # Ensure code coverage is generated
 
+        # Debug step: Check if coverage directory exists
+        echo "Checking if coverage directory exists..."
+        dir /s /b ./coverage  # List files in the local coverage folder recursively
+
+        mkdir -p $(Build.ArtifactStagingDirectory)/coverage/client  # Use forward slashes for consistency
+
+        # Debug step: Confirm directory creation
+        echo "Checking if $(Build.ArtifactStagingDirectory)/coverage/client exists..."
+        dir /s /b $(Build.ArtifactStagingDirectory)/coverage  # List coverage folder in staging directory
+
+        # Attempt to copy coverage files if they exist
+        if exist "./coverage" (
+            echo "Coverage folder found, copying files."
+            xcopy /E /I ./coverage $(Build.ArtifactStagingDirectory)/coverage/client
+        ) else (
+            echo "Coverage folder not found, skipping copy."
+        )
+      displayName: 'Run tests and generate code coverage'
+      
+    - script: |
+        echo "Contents of $(Build.ArtifactStagingDirectory)/coverage/client:"
+        dir "$(Build.ArtifactStagingDirectory)/coverage/client" /b /s
+      displayName: 'Debug: List Coverage Files'
+
+
+    - task: PublishCodeCoverageResults@2
+      inputs:
+        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coverage/client/lcov-report/index.html'
+      displayName: 'Publish code coverage results'
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
@@ -43,6 +72,7 @@ stages:
           client/**
           server/**
           GenerationAPI/**
+          !**/node_modules/**
         targetFolder: '$(Build.ArtifactStagingDirectory)'
       displayName: 'Copy project files'
 
