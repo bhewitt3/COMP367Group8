@@ -2,6 +2,7 @@ trigger:
 - main
 
 stages:
+#CI
 - stage: Build
   displayName: 'Build Stage'
   jobs:
@@ -19,7 +20,7 @@ stages:
       inputs:
         versionSpec: '3.12'
       displayName: 'Use Python 3.12'
-#Compile project
+#Compile project - build client, server, and flaskAPI
     - script: |
         cd client
         npm install
@@ -35,15 +36,13 @@ stages:
     - script: |
         cd client
         npm run test
-        # mkdir $(Build.ArtifactStagingDirectory)/coverage
-        # mkdir $(Build.ArtifactStagingDirectory)/coverage/client
-        # cp -r coverage $(Build.ArtifactStagingDirectory)/coverage/client
       displayName: 'Tests and code coverage'
-      
+#publish code coverage
     - task: PublishCodeCoverageResults@2
       inputs:
         summaryFileLocation: $(System.DefaultWorkingDirectory)/**/coverage/lcov.info
       displayName: 'Publish code coverage results'
+#copy build files to artifact staging directory
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
@@ -55,6 +54,7 @@ stages:
         targetFolder: '$(Build.ArtifactStagingDirectory)'
       displayName: 'Copy project files'
 
+#publish the staged artifact
     - task: PublishPipelineArtifact@1
       inputs:
         artifactName: e2e-server
@@ -62,7 +62,7 @@ stages:
         publishLocation: 'pipeline'
       displayName: 'Publish artifact'
 
-
+#CD
 - stage: Deliver
   displayName: 'Deliver Stage'
   dependsOn: Build
@@ -74,7 +74,7 @@ stages:
     steps:
     - download: current
       artifact: e2e-server
-
+#Release artifact
     - script: |
         echo "Simulating artifact release"
         dir "$(Pipeline.Workspace)/e2e-server"
@@ -92,7 +92,7 @@ stages:
     steps:
     - download: current
       artifact: e2e-server
-
+#deploy to dev env
     - script: |
         echo "Launching React client in Dev environment"
         cd $(Pipeline.Workspace)/e2e-server/client
@@ -122,7 +122,7 @@ stages:
     steps:
     - download: current
       artifact: e2e-server
-
+#deploy to QAT env
     - script: |
         echo "Launching React client in QAT environment"
         cd $(Pipeline.Workspace)/e2e-server/client
@@ -152,7 +152,7 @@ stages:
     steps:
     - download: current
       artifact: e2e-server
-
+#deploy to staging env
     - script: |
         echo "Launching React client in Staging environment"
         cd $(Pipeline.Workspace)/e2e-server/client
@@ -182,7 +182,7 @@ stages:
     steps:
     - download: current
       artifact: e2e-server
-
+#deploy to production env
     - script: |
         echo "Launching React client in Production environment"
         cd $(Pipeline.Workspace)/e2e-server/client
