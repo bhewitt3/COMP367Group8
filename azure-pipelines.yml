@@ -42,6 +42,20 @@ stages:
       inputs:
         summaryFileLocation: $(System.DefaultWorkingDirectory)/**/coverage/lcov.info
       displayName: 'Publish code coverage results'
+#SonarQube analysis
+    - task: SonarCloudPrepare@3
+      inputs:
+        SonarQube: 'Sonar Cloud connection'
+        organization: 'noted'
+        scannerMode: 'cli'
+        configMode: 'manual'
+        cliProjectKey: 'noted'
+        cliProjectName: 'noted'
+        cliSources: 'client/src'
+      displayName: "Prepare SonarQube analysis"
+    - task: SonarCloudAnalyze@3
+      displayName: 'Run SonarQube analysis'
+
 #copy build files to artifact staging directory
     - task: CopyFiles@2
       inputs:
