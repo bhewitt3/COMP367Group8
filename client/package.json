@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest --coverage --coverageReporters=cobertura"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@react-pdf-viewer/core": "^3.12.0",
