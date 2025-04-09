@@ -40,9 +40,13 @@ stages:
       displayName: 'Tests and code coverage'
       
     - script: |
-        echo "Listing contents of $(Build.ArtifactStagingDirectory)/coverage/client"
-        ls -R "$(Build.ArtifactStagingDirectory)/coverage/client"
-      displayName: 'Debug: List coverage directory'
+        echo "Contents of $(Build.ArtifactStagingDirectory)/coverage/client:"
+        if [[ "$AGENT_OS" == "Windows_NT" ]]; then
+          dir "$(Build.ArtifactStagingDirectory)/coverage/client" /b /s
+        else
+          ls -R "$(Build.ArtifactStagingDirectory)/coverage/client"
+        fi
+      displayName: 'Debug: List Coverage Files'
 
 
     - task: PublishCodeCoverageResults@2
