@@ -38,11 +38,16 @@ stages:
         mkdir -p $(Build.ArtifactStagingDirectory)/coverage/client
         cp -r coverage $(Build.ArtifactStagingDirectory)/coverage/client
       displayName: 'Tests and code coverage'
+      
+    - script: |
+        echo "Listing contents of $(Build.ArtifactStagingDirectory)/coverage/client"
+        ls -R "$(Build.ArtifactStagingDirectory)/coverage/client"
+      displayName: 'Debug: List coverage directory'
+
 
     - task: PublishCodeCoverageResults@2
       inputs:
         summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coverage/client/lcov-report/index.html'
-        reportDirectory: '$(Build.ArtifactStagingDirectory)/coverage/client'
       displayName: 'Publish code coverage results'
     - task: CopyFiles@2
       inputs:
