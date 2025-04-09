@@ -34,36 +34,22 @@ stages:
 #test project
     - script: |
         cd client
-        npm run test -- --coverage  # Ensure code coverage is generated
-
-        # Debug step: Check if coverage directory exists
-        echo "Checking if coverage directory exists..."
-        dir /s /b ./coverage  # List files in the local coverage folder recursively
-
-        mkdir -p $(Build.ArtifactStagingDirectory)/coverage/client  # Use forward slashes for consistency
-
-        # Debug step: Confirm directory creation
-        echo "Checking if $(Build.ArtifactStagingDirectory)/coverage/client exists..."
-        dir /s /b $(Build.ArtifactStagingDirectory)/coverage  # List coverage folder in staging directory
-
-        # Attempt to copy coverage files if they exist
-        if exist "./coverage" (
-            echo "Coverage folder found, copying files."
-            xcopy /E /I ./coverage $(Build.ArtifactStagingDirectory)/coverage/client
-        ) else (
-            echo "Coverage folder not found, skipping copy."
-        )
-      displayName: 'Run tests and generate code coverage'
+        npm run test
+        # mkdir $(Build.ArtifactStagingDirectory)/coverage
+        # mkdir $(Build.ArtifactStagingDirectory)/coverage/client
+        # cp -r coverage $(Build.ArtifactStagingDirectory)/coverage/client
+      displayName: 'Tests and code coverage'
       
-    - script: |
-        echo "Contents of $(Build.ArtifactStagingDirectory)/coverage/client:"
-        dir "$(Build.ArtifactStagingDirectory)/coverage/client" /b /s
-      displayName: 'Debug: List Coverage Files'
+    # - script: |
+    #     echo "Contents of $(Build.ArtifactStagingDirectory)/coverage/client:"
+    #     dir "$(Build.ArtifactStagingDirectory)/coverage/client" /b /s
+    #   displayName: 'Debug: List Coverage Files'
 
 
-    - task: PublishCodeCoverageResults@2
+    - task: PublishCodeCoverageResults@1
       inputs:
-        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coverage/client/lcov-report/index.html'
+        codeCoverageTool: Cobertura
+        summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml
       displayName: 'Publish code coverage results'
     - task: CopyFiles@2
       inputs:
