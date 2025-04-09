@@ -41,11 +41,7 @@ stages:
       
     - script: |
         echo "Contents of $(Build.ArtifactStagingDirectory)/coverage/client:"
-        if [[ "$AGENT_OS" == "Windows_NT" ]]; then
-          dir "$(Build.ArtifactStagingDirectory)/coverage/client" /b /s
-        else
-          ls -R "$(Build.ArtifactStagingDirectory)/coverage/client"
-        fi
+        dir "$(Build.ArtifactStagingDirectory)/coverage/client" /b /s
       displayName: 'Debug: List Coverage Files'
 
 
