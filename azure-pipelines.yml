@@ -40,16 +40,9 @@ stages:
         # cp -r coverage $(Build.ArtifactStagingDirectory)/coverage/client
       displayName: 'Tests and code coverage'
       
-    # - script: |
-    #     echo "Contents of $(Build.ArtifactStagingDirectory)/coverage/client:"
-    #     dir "$(Build.ArtifactStagingDirectory)/coverage/client" /b /s
-    #   displayName: 'Debug: List Coverage Files'
-
-
-    - task: PublishCodeCoverageResults@1
+    - task: PublishCodeCoverageResults@2
       inputs:
-        codeCoverageTool: Cobertura
-        summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml
+        summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage/lcov-report/index.html
       displayName: 'Publish code coverage results'
     - task: CopyFiles@2
       inputs:
